@@ -3,168 +3,725 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Techloq Smasher</title>
+    <title>Techloq Smasher - YouTube Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-primary: #f0f0f0;
+            --bg-secondary: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --accent: #8B00FF;
+            --accent-hover: #6B00CC;
+            --border: #dddddd;
+            --shadow: rgba(0,0,0,0.1);
+            --queue-bg: #f8f8f8;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border: #404040;
+            --shadow: rgba(0,0,0,0.3);
+            --queue-bg: #2a2a2a;
+        }
+
+        * {
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f0f0f0;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
         }
-        
+
+        .header {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
         h1 {
-            color: #8B00FF;
+            color: var(--accent);
             font-size: 48px;
             font-weight: bold;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 800px;
+            margin: 0;
+            text-shadow: 2px 2px 4px var(--shadow);
             display: flex;
-            flex-direction: column;
             align-items: center;
+            gap: 15px;
         }
-        
-        .input-container {
-            width: 100%;
+
+        .youtube-icon {
+            font-size: 42px;
+            color: #FF0000;
+        }
+
+        .controls {
             display: flex;
             gap: 10px;
-            margin-bottom: 30px;
+            align-items: center;
         }
-        
-        #urlInput {
-            flex: 1;
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            outline: none;
-        }
-        
-        #urlInput:focus {
-            border-color: #8B00FF;
-        }
-        
-        #embedBtn {
-            padding: 12px 24px;
-            background-color: #8B00FF;
-            color: white;
+
+        .theme-toggle {
+            background: none;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            font-size: 24px;
+            color: var(--text-primary);
             cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
             transition: background-color 0.3s;
         }
-        
-        #embedBtn:hover {
-            background-color: #6B00CC;
+
+        .theme-toggle:hover {
+            background-color: var(--border);
         }
-        
+
+        .main-container {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+
+        .player-section {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #urlInput {
+            flex: 1;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        #urlInput:focus {
+            border-color: var(--accent);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border);
+        }
+
         #videoContainer {
             width: 100%;
-            max-width: 800px;
             aspect-ratio: 16/9;
             background-color: #000;
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            position: relative;
         }
-        
+
+        .video-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .video-placeholder i {
+            font-size: 48px;
+            opacity: 0.5;
+        }
+
         iframe {
             width: 100%;
             height: 100%;
             border: none;
         }
-        
+
+        .queue-section {
+            background-color: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px var(--shadow);
+            max-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .queue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .queue-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .queue-count {
+            background-color: var(--accent);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .queue-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .queue-item {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background-color: var(--queue-bg);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .queue-item:hover {
+            transform: translateX(5px);
+            background-color: var(--border);
+        }
+
+        .queue-item.active {
+            border: 2px solid var(--accent);
+        }
+
+        .queue-thumbnail {
+            width: 80px;
+            height: 60px;
+            background-color: #000;
+            border-radius: 4px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .queue-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .queue-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .queue-title-text {
+            font-weight: 500;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .queue-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .queue-actions {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .queue-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .queue-btn:hover {
+            background-color: var(--border);
+            color: var(--text-primary);
+        }
+
         .error {
             color: #ff4444;
             margin-top: 10px;
             text-align: center;
         }
-        
-        .instructions {
-            margin-top: 20px;
+
+        .empty-queue {
             text-align: center;
-            color: #666;
-            font-size: 14px;
+            color: var(--text-secondary);
+            padding: 40px 20px;
+        }
+
+        .empty-queue i {
+            font-size: 48px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            background-color: var(--bg-primary);
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .shortcuts-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            h1 {
+                font-size: 36px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Techloq Smasher</h1>
-    
-    <div class="container">
-        <div class="input-container">
-            <input type="text" id="urlInput" placeholder="Paste YouTube URL here...">
-            <button id="embedBtn">Embed Video</button>
+    <div class="header">
+        <h1><i class="fab fa-youtube youtube-icon"></i> Techloq Smasher</h1>
+        <div class="controls">
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
         </div>
-        
-        <div id="videoContainer">
-            <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">
-                <p>Enter a YouTube URL above to start watching</p>
+    </div>
+
+    <div class="main-container">
+        <div class="player-section">
+            <div class="input-container">
+                <input type="text" id="urlInput" placeholder="Paste YouTube URL here...">
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="embedBtn">
+                        <i class="fas fa-play"></i> Play Now
+                    </button>
+                    <button class="btn btn-secondary" id="addToQueueBtn">
+                        <i class="fas fa-plus"></i> Add to Queue
+                    </button>
+                </div>
+            </div>
+
+            <div id="videoContainer">
+                <div class="video-placeholder">
+                    <i class="fab fa-youtube"></i>
+                    <p>Enter a YouTube URL above to start watching</p>
+                </div>
+            </div>
+
+            <div id="errorMessage" class="error"></div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="totalVideos">0</div>
+                    <div class="stat-label">Total Videos</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="totalWatchTime">0:00</div>
+                    <div class="stat-label">Watch Time</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="queueSize">0</div>
+                    <div class="stat-label">Queue Size</div>
+                </div>
+            </div>
+
+            <div class="shortcuts-info">
+                <i class="fas fa-keyboard"></i> Press Enter to play • Ctrl/Cmd + Enter to add to queue
             </div>
         </div>
-        
-        <div id="errorMessage" class="error"></div>
-        
-        <div class="instructions">
-            <p>Paste any YouTube URL and click "Embed Video" to watch</p>
+
+        <div class="queue-section">
+            <div class="queue-header">
+                <h2 class="queue-title">
+                    <i class="fas fa-list"></i> Queue
+                </h2>
+                <span class="queue-count" id="queueCount">0</span>
+            </div>
+            <div class="queue-list" id="queueList">
+                <div class="empty-queue">
+                    <i class="fas fa-list"></i>
+                    <p>Your queue is empty</p>
+                    <p style="font-size: 12px; margin-top: 10px;">Add videos to build your playlist</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        document.getElementById('embedBtn').addEventListener('click', embedVideo);
-        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+        // State management
+        const state = {
+            queue: [],
+            currentVideoIndex: -1,
+            stats: {
+                totalVideos: 0,
+                totalWatchTime: 0
+            },
+            watchTimer: null
+        };
+
+        // DOM elements
+        const urlInput = document.getElementById('urlInput');
+        const embedBtn = document.getElementById('embedBtn');
+        const addToQueueBtn = document.getElementById('addToQueueBtn');
+        const videoContainer = document.getElementById('videoContainer');
+        const errorMessage = document.getElementById('errorMessage');
+        const queueList = document.getElementById('queueList');
+        const queueCount = document.getElementById('queueCount');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeIcon();
+
+        // Event listeners
+        embedBtn.addEventListener('click', () => playVideo(urlInput.value));
+        addToQueueBtn.addEventListener('click', () => addToQueue(urlInput.value));
+        urlInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                embedVideo();
+                if (e.ctrlKey || e.metaKey) {
+                    addToQueue(urlInput.value);
+                } else {
+                    playVideo(urlInput.value);
+                }
             }
         });
+        themeToggle.addEventListener('click', toggleTheme);
 
-        function embedVideo() {
-            const url = document.getElementById('urlInput').value.trim();
-            const errorDiv = document.getElementById('errorMessage');
-            const videoContainer = document.getElementById('videoContainer');
-            
-            // Clear previous errors
-            errorDiv.textContent = '';
-            
-            if (!url) {
-                errorDiv.textContent = 'Please enter a YouTube URL';
-                return;
-            }
-            
+        // Theme functions
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            themeToggle.innerHTML = theme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        }
+
+        // YouTube URL processing
+        function processYouTubeUrl(url) {
             let videoId = '';
             
-            // Extract video ID from various YouTube URL formats
             if (url.includes('youtube.com/watch?v=')) {
                 videoId = url.split('v=')[1].split('&')[0];
             } else if (url.includes('youtu.be/')) {
                 videoId = url.split('youtu.be/')[1].split('?')[0];
             } else if (url.includes('youtube.com/embed/')) {
                 videoId = url.split('embed/')[1].split('?')[0];
+            } else if (url.includes('youtube.com/shorts/')) {
+                videoId = url.split('shorts/')[1].split('?')[0];
             }
             
-            if (!videoId) {
-                errorDiv.textContent = 'Invalid YouTube URL. Please check and try again.';
+            if (videoId) {
+                return {
+                    id: videoId,
+                    type: 'youtube',
+                    embedUrl: `https://www.youtube.com/embed/${videoId}`,
+                    thumbnail: `https://img.youtube.com/vi/${videoId}/default.jpg`
+                };
+            }
+            return null;
+        }
+
+        // Video playback
+        function playVideo(url) {
+            const video = processYouTubeUrl(url);
+            if (!video) {
+                showError('Invalid YouTube URL. Please check and try again.');
                 return;
             }
+
+            clearError();
             
-            // Create iframe with the video
+            // Stop previous watch timer
+            if (state.watchTimer) {
+                clearInterval(state.watchTimer);
+            }
+            
             videoContainer.innerHTML = `
                 <iframe 
-                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+                    src="${video.embedUrl}?autoplay=1&rel=0" 
                     allowfullscreen
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
                 </iframe>
             `;
+
+            // Start watch timer
+            state.watchTimer = setInterval(() => {
+                state.stats.totalWatchTime++;
+                updateStats();
+            }, 1000);
+
+            // Add to queue if not already there
+            const existingIndex = state.queue.findIndex(v => v.id === video.id);
+            if (existingIndex === -1) {
+                addToQueueInternal(video);
+            } else {
+                state.currentVideoIndex = existingIndex;
+                updateQueueDisplay();
+            }
+
+            // Update stats
+            state.stats.totalVideos++;
+            updateStats();
         }
+
+        // Queue management
+        function addToQueue(url) {
+            const video = processYouTubeUrl(url);
+            if (!video) {
+                showError('Invalid YouTube URL. Please check and try again.');
+                return;
+            }
+            
+            addToQueueInternal(video);
+            urlInput.value = '';
+            clearError();
+        }
+
+        function addToQueueInternal(video) {
+            // Get video title (using API would be better, but this works for now)
+            const title = `YouTube Video ${video.id}`;
+            
+            const queueItem = {
+                ...video,
+                title: title,
+                addedAt: new Date().toLocaleTimeString()
+            };
+            
+            state.queue.push(queueItem);
+            updateQueueDisplay();
+        }
+
+        function updateQueueDisplay() {
+            queueCount.textContent = state.queue.length;
+            document.getElementById('queueSize').textContent = state.queue.length;
+            
+            if (state.queue.length === 0) {
+                queueList.innerHTML = `
+                    <div class="empty-queue">
+                        <i class="fas fa-list"></i>
+                        <p>Your queue is empty</p>
+                        <p style="font-size: 12px; margin-top: 10px;">Add videos to build your playlist</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            queueList.innerHTML = state.queue.map((item, index) => `
+                <div class="queue-item ${index === state.currentVideoIndex ? 'active' : ''}" 
+                     onclick="playFromQueue(${index})">
+                    <div class="queue-thumbnail">
+                        <img src="${item.thumbnail}" alt="Thumbnail">
+                    </div>
+                    <div class="queue-info">
+                        <div class="queue-title-text">${item.title}</div>
+                        <div class="queue-meta">
+                            Added at ${item.addedAt}
+                        </div>
+                    </div>
+                    <div class="queue-actions">
+                        <button class="queue-btn" onclick="event.stopPropagation(); removeFromQueue(${index})" title="Remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        ${index > 0 ? `
+                            <button class="queue-btn" onclick="event.stopPropagation(); moveInQueue(${index}, -1)" title="Move up">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                        ` : ''}
+                        ${index < state.queue.length - 1 ? `
+                            <button class="queue-btn" onclick="event.stopPropagation(); moveInQueue(${index}, 1)" title="Move down">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function playFromQueue(index) {
+            const item = state.queue[index];
+            state.currentVideoIndex = index;
+            
+            // Stop previous watch timer
+            if (state.watchTimer) {
+                clearInterval(state.watchTimer);
+            }
+            
+            videoContainer.innerHTML = `
+                <iframe 
+                    src="${item.embedUrl}?autoplay=1&rel=0" 
+                    allowfullscreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                </iframe>
+            `;
+
+            // Start watch timer
+            state.watchTimer = setInterval(() => {
+                state.stats.totalWatchTime++;
+                updateStats();
+            }, 1000);
+            
+            updateQueueDisplay();
+        }
+
+        function removeFromQueue(index) {
+            state.queue.splice(index, 1);
+            if (state.currentVideoIndex >= index) {
+                state.currentVideoIndex--;
+            }
+            updateQueueDisplay();
+        }
+
+        function moveInQueue(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex >= 0 && newIndex < state.queue.length) {
+                [state.queue[index], state.queue[newIndex]] = [state.queue[newIndex], state.queue[index]];
+                if (state.currentVideoIndex === index) {
+                    state.currentVideoIndex = newIndex;
+                } else if (state.currentVideoIndex === newIndex) {
+                    state.currentVideoIndex = index;
+                }
+                updateQueueDisplay();
+            }
+        }
+
+        // Stats management
+        function updateStats() {
+            document.getElementById('totalVideos').textContent = state.stats.totalVideos;
+            document.getElementById('totalWatchTime').textContent = formatTime(state.stats.totalWatchTime);
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            if (hours > 0) {
+                return `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Error handling
+        function showError(message) {
+            errorMessage.textContent = message;
+            setTimeout(clearError, 5000);
+        }
+
+        function clearError() {
+            errorMessage.textContent = '';
+        }
+
+        // Initialize
+        updateQueueDisplay();
+        updateStats();
     </script>
 </body>
 </html>
