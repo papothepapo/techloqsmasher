@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Techloq Smasher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        h1 {
+            color: #8B00FF;
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .input-container {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        #urlInput {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        #urlInput:focus {
+            border-color: #8B00FF;
+        }
+        
+        #embedBtn {
+            padding: 12px 24px;
+            background-color: #8B00FF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #embedBtn:hover {
+            background-color: #6B00CC;
+        }
+        
+        #videoContainer {
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .error {
+            color: #ff4444;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Techloq Smasher</h1>
+    
+    <div class="container">
+        <div class="input-container">
+            <input type="text" id="urlInput" placeholder="Paste YouTube URL here...">
+            <button id="embedBtn">Embed Video</button>
+        </div>
+        
+        <div id="videoContainer">
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666;">
+                <p>Enter a YouTube URL above to start watching</p>
+            </div>
+        </div>
+        
+        <div id="errorMessage" class="error"></div>
+        
+        <div class="instructions">
+            <p>Paste any YouTube URL and click "Embed Video" to watch</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('embedBtn').addEventListener('click', embedVideo);
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                embedVideo();
+            }
+        });
+
+        function embedVideo() {
+            const url = document.getElementById('urlInput').value.trim();
+            const errorDiv = document.getElementById('errorMessage');
+            const videoContainer = document.getElementById('videoContainer');
+            
+            // Clear previous errors
+            errorDiv.textContent = '';
+            
+            if (!url) {
+                errorDiv.textContent = 'Please enter a YouTube URL';
+                return;
+            }
+            
+            let videoId = '';
+            
+            // Extract video ID from various YouTube URL formats
+            if (url.includes('youtube.com/watch?v=')) {
+                videoId = url.split('v=')[1].split('&')[0];
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1].split('?')[0];
+            } else if (url.includes('youtube.com/embed/')) {
+                videoId = url.split('embed/')[1].split('?')[0];
+            }
+            
+            if (!videoId) {
+                errorDiv.textContent = 'Invalid YouTube URL. Please check and try again.';
+                return;
+            }
+            
+            // Create iframe with the video
+            videoContainer.innerHTML = `
+                <iframe 
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+                    allowfullscreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                </iframe>
+            `;
+        }
+    </script>
+</body>
+</html>
